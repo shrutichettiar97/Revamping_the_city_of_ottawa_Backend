@@ -1,0 +1,73 @@
+version: "3"
+services: 
+
+    api-gateway:
+        build: "./api-gateway"
+        depends_on: 
+            - location-service
+            - login-service
+        ports:
+            - "7000:7000"
+        volumes: 
+            - ./api-gateway:/opt/app
+
+    location-service:
+        build: "./location-service"
+        depends_on: 
+            - location-service-db
+        environment: 
+            - DB_URI=mysql://root:password@location-service-db/db?charset=UTF8
+        ports:
+            - "7100:7100"
+        volumes: 
+            - ./location-service:/opt/app
+
+    location-service-db:
+        environment: 
+            - MYSQL_ROOT_PASSWORD=password
+            - MYSQL_DATABASE=db
+        image: mysql:5.7.20
+        ports: 
+            - 0.0.0.0:7200:3306
+
+    login-service:
+        build: "./login-service"
+        depends_on: 
+            - login-service-db
+        environment: 
+            - DB_URI=mysql://root:password@login-service-db/db?charset=UTF8
+        ports:
+            - "7101:7101"
+        volumes: 
+            - ./login-service:/opt/app
+
+    login-service-db:
+        environment: 
+            - MYSQL_ROOT_PASSWORD=password
+            - MYSQL_DATABASE=db
+        image: mysql:5.7.20
+        ports:
+            - 0.0.0.0:7201:3306
+    
+#    news-service:
+#        build: "./news-service"
+#        depends_on: 
+#             - news-service-db
+#         environment: 
+#             - DB_URI=mysql://root:password@news-service-db/db?charset=UTF8
+#         ports:
+#             - "7102:7102"
+#         volumes:
+#             - ./news-service:/opt/app
+
+#     news-service-db:
+#         environment:
+#             - MYSQL_ROOT_PASSWORD=password
+#             - MYSQL_DATABASE=db
+#         image: mysql:5.7.20
+#         ports:
+#             - 0.0.0.0:7202:3306
+    
+
+
+
